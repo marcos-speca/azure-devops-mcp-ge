@@ -33,11 +33,47 @@ This project adapts the upstream codebase while preserving core tool logic. The 
 
 ---
 
-## 🚀 Deployment on Google Cloud Run
+## 🚀 Setup, Installation & Deployment on Google Cloud Run
 
-### 1. Prerequisites & Environment Setup
+Follow this step-by-step guide from cloning the repository to running your containerized remote MCP server on Google Cloud Run.
 
-Create a local `.env` file (which is ignored by Git) based on `.env.example`:
+### 📋 Prerequisites
+
+Ensure you have the following CLI tools and account permissions installed and configured before proceeding:
+
+- **Node.js (v20+) & npm/Corepack:** Required for installing project dependencies and executing local builds.
+- **Google Cloud SDK (`gcloud` CLI):** Required for interacting with Google Cloud Secret Manager and deploying containers to Cloud Run.
+- **Git:** Required for cloning and versioning the repository.
+- **Microsoft Entra ID Access:** A tenant administrator or developer account capable of registering single-tenant OAuth client applications and granting delegated permissions.
+- **Google Cloud Project:** An active GCP project with billing enabled and the Cloud Run and Secret Manager APIs activated.
+
+### 1. Clone the Repository & Local Setup
+
+Clone this specialized fork to your local terminal and install its Node.js dependencies:
+
+```bash
+# Clone the repository
+git clone https://github.com/marcos-speca/azure-devops-mcp-ge.git
+
+# Navigate into the project directory
+cd azure-devops-mcp-ge
+
+# Install dependencies (requires Node.js 20+)
+npm install
+
+# Build TypeScript code locally to verify compilation
+npm run build
+```
+
+### 2. Configure Environment Variables
+
+Create a local `.env` file (which is ignored by Git) based on the template:
+
+```bash
+cp .env.example .env
+```
+
+Edit your new `.env` file with your target tenant and organization values:
 
 ```env
 TENANT_ID=<YOUR_ENTRA_TENANT_ID>
@@ -48,7 +84,7 @@ MCP_DOMAINS=core,work-items,repositories
 PORT=8080
 ```
 
-### 2. Microsoft Entra ID App Registration
+### 3. Microsoft Entra ID App Registration
 
 1. In the Microsoft Entra ID portal, create a new **Single Tenant** App Registration named `gemini-enterprise-ado-mcp`.
 2. Under **Authentication**, add a **Web** platform with the exact Redirect URI:
@@ -60,9 +96,9 @@ PORT=8080
 4. Under **Expose an API**, set the **Application ID URI** to `api://<YOUR_CLIENT_ID>` and add a scope named `access_as_user` (`Admins and users` consent).
 5. Under **API permissions**, add delegated permission **Azure DevOps -> user_impersonation** and grant admin consent.
 
-### 3. Deploy to Cloud Run
+### 4. Deploy to Cloud Run
 
-Execute the deployment command, passing the escaped environment variable string and Secret Manager reference:
+Execute the deployment command using the Google Cloud SDK, passing the escaped environment variable string and Secret Manager reference:
 
 ```bash
 gcloud run deploy mcp-azure-devops \

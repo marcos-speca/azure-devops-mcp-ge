@@ -17,6 +17,7 @@ import { configureAllTools } from "./tools.js";
 import { UserAgentComposer } from "./useragent.js";
 import { packageVersion } from "./version.js";
 import { DomainsManager } from "./shared/domains.js";
+import { setOrgName } from "./org-name.js";
 
 function isGitHubCodespaceEnv(): boolean {
   return process.env.CODESPACES === "true" && !!process.env.CODESPACE_NAME;
@@ -59,6 +60,7 @@ const argv = yargs(hideBin(process.argv))
   .parseSync();
 
 export const orgName = argv.organization as string;
+setOrgName(orgName);
 const orgUrl = "https://dev.azure.com/" + orgName;
 
 const domainsManager = new DomainsManager(argv.domains);

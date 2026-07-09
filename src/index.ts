@@ -66,12 +66,23 @@ const orgUrl = "https://dev.azure.com/" + orgName;
 const domainsManager = new DomainsManager(argv.domains);
 export const enabledDomains = domainsManager.getEnabledDomains();
 
+function extractRawPat(token: string): string {
+  if (token.startsWith("Basic ")) {
+    token = token.slice(6).trim();
+  }
+  try {
+    const decoded = Buffer.from(token, "base64").toString("utf8");
+    if (/^[^:]*:[a-zA-Z0-9~_.-]+$/.test(decoded)) {
+      return decoded.split(":").slice(1).join(":");
+    }
+  } catch {}
+  return token;
+}
+
 function getAzureDevOpsClient(getAzureDevOpsToken: () => Promise<string>, userAgentComposer: UserAgentComposer, authType: string): () => Promise<WebApi> {
   return async () => {
     const accessToken = await getAzureDevOpsToken();
-    // For pat, accessToken is base64("{email}:{token}"). Decode to extract the token part,
-    // since getPersonalAccessTokenHandler prepends ":" internally and just needs the raw token.
-    const authHandler = authType === "pat" ? getPersonalAccessTokenHandler(Buffer.from(accessToken, "base64").toString("utf8").split(":").slice(1).join(":")) : getBearerHandler(accessToken);
+    const authHandler = authType === "pat" ? getPersonalAccessTokenHandler(extractRawPat(accessToken)) : getBearerHandler(accessToken);
     const connection = new WebApi(orgUrl, authHandler, undefined, {
       productName: "AzureDevOps.MCP",
       productVersion: packageVersion,

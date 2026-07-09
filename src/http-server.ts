@@ -63,6 +63,19 @@ async function getDynamicToken(): Promise<string> {
   return pat;
 }
 
+function extractRawPat(token: string): string {
+  if (token.startsWith("Basic ")) {
+    token = token.slice(6).trim();
+  }
+  try {
+    const decoded = Buffer.from(token, "base64").toString("utf8");
+    if (/^[^:]*:[a-zA-Z0-9~_.-]+$/.test(decoded)) {
+      return decoded.split(":").slice(1).join(":");
+    }
+  } catch {}
+  return token;
+}
+
 async function getAzureDevOpsConnection(): Promise<WebApi> {
   const token = await getDynamicToken();
   const isJwt = token.includes(".");
@@ -71,16 +84,7 @@ async function getAzureDevOpsConnection(): Promise<WebApi> {
   if (isJwt) {
     authHandler = getBearerHandler(token);
   } else {
-    let rawPat = token;
-    try {
-      const decoded = Buffer.from(token, "base64").toString("utf8");
-      if (decoded.includes(":")) {
-        rawPat = decoded.split(":").slice(1).join(":");
-      }
-    } catch {
-      // Not base64
-    }
-    authHandler = getPersonalAccessTokenHandler(rawPat);
+    authHandler = getPersonalAccessTokenHandler(extractRawPat(token));
   }
 
   return new WebApi(orgUrl, authHandler, undefined, {
@@ -93,15 +97,8 @@ async function getAzureDevOpsConnection(): Promise<WebApi> {
 // In PAT mode, if using global fetch interceptor, replicate index.ts behavior:
 const pat = process.env.AZDO_PAT || process.env.PERSONAL_ACCESS_TOKEN;
 if (pat && !isOboEnabled()) {
-  let basicValue = pat;
-  try {
-    const decoded = Buffer.from(pat, "base64").toString("utf8");
-    if (!decoded.includes(":")) {
-      basicValue = Buffer.from(`:${pat}`).toString("base64");
-    }
-  } catch {
-    basicValue = Buffer.from(`:${pat}`).toString("base64");
-  }
+  const rawPat = extractRawPat(pat);
+  const basicValue = Buffer.from(`:${rawPat}`).toString("base64");
 
   const _originalFetch = globalThis.fetch;
   globalThis.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {

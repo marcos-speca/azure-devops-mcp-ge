@@ -64,17 +64,27 @@ export function requireEntraAuth(req: AuthenticatedRequest, res: Response, next:
     });
   }
 
+  const validAudiences = (AUDIENCE ? [AUDIENCE, AUDIENCE.startsWith("api://") ? AUDIENCE : `api://${AUDIENCE}`, "499b84ac-1321-427f-aa17-267ca6975798"] : ["499b84ac-1321-427f-aa17-267ca6975798"]) as [
+    string,
+    ...string[],
+  ];
+
   jwt.verify(
     token,
     getKey,
     {
-      audience: AUDIENCE,
+      audience: validAudiences,
       issuer: [ISSUER, `https://sts.windows.net/${TENANT}/`], // Allow both v1 and v2 issuers if needed, but primary is ISSUER
       algorithms: ["RS256"],
     },
-    (err, decoded) => {
+    (err: any, decoded: any) => {
       if (err) {
-        logger.error(`requireEntraAuth: JWT validation failed: ${String(err)}`);
+        const unverified = jwt.decode(token) as any;
+        logger.error(`requireEntraAuth: JWT validation failed: ${String(err)}`, {
+          receivedAudience: unverified?.aud,
+          receivedIssuer: unverified?.iss,
+          expectedAudiences: validAudiences,
+        });
         res.status(401).json({ error: "invalid token", detail: String(err) });
         return;
       }

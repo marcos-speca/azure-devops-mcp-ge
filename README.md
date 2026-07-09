@@ -146,3 +146,11 @@ This customized GE server currently enables three primary tool domains by defaul
 ## 📝 License
 
 This project is licensed under the MIT License, adhering to the upstream `microsoft/azure-devops-mcp` terms.
+
+---
+
+## ⚠️ Disclaimer & Support
+
+This repository is provided on an **"AS IS"** basis, without warranties or conditions of any kind, either express or implied. It is intended solely as an architectural reference and demonstration for integrating Azure DevOps with Google Cloud Gemini Enterprise.
+
+**No Official Support:** This project is an independent adaptation and is **not** an officially supported product by Google LLC or Microsoft Corporation. Neither company provides formal Service Level Agreements (SLAs), maintenance, or product support for this codebase. Use at your own discretion and risk in production environments.

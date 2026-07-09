@@ -1,18 +1,16 @@
-# Support
+# Support Policy
 
-## Supporting material
+## ⚠️ Disclaimer & No Warranty
 
-- [How to guide](./docs/HOWTO.md)
-- [Troubleshooting](./docs/TROUBLESHOOTING.md)
+This project is provided on an **"AS IS"** basis, without warranties or conditions of any kind, either express or implied. It is intended solely as an architectural reference and proof-of-concept demonstration for integrating Azure DevOps with Google Cloud Gemini Enterprise data connectors.
 
-## Security Related
+## 🚫 No Official SLA or Product Support
 
-For any Security concerns or Issues, please refer to [SECURITY.md](./SECURITY.md) on properly raising them.
+This repository is an independent adaptation and is **not** an officially supported product by **Google LLC** or **Microsoft Corporation**.
 
-## How to file issues and get help
+- Neither Google LLC nor Microsoft Corporation provides formal Service Level Agreements (SLAs), technical support, or enterprise maintenance for this codebase.
+- Users and organizations adopting or deploying this code in test or production environments do so at their own discretion and risk.
 
-This project uses GitHub Issues to track bugs and feature requests. Please refer to those guidelines to fill them: [CONTRIBUTING.md](./CONTRIBUTING.md)
+## 🤝 Community & Issues
 
-## Microsoft Support Policy
-
-Support for the azure-devops-mcp is limited to the resources listed above.
+If you encounter bugs or have suggestions for improving this adaptation, you may file an issue in this repository. Please note that responses and remediation are strictly community-driven and best-effort.
